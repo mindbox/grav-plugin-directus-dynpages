@@ -1,0 +1,29 @@
+{
+  "name": "sebastian-laube/directus-dynpages",
+  "type": "grav-plugin",
+  "description": "Creating dynamic pages from flex objects",
+  "keywords": ["plugin"],
+  "homepage": "https://github.com/sebastian-laube/grav-plugin-directus-dynpages",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sebastian Laube",
+      "email": "sebastianlaube@mindbox.de",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Grav\\Plugin\\DirectusDynpages\\": "classes/"
+    },
+    "classmap":  ["directus-dynpages.php"]
+  },
+  "config": {
+    "platform": {
+      "php": "7.1.3"
+    }
+  }
+}

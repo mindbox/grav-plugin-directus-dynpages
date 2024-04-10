@@ -1,0 +1,19 @@
+name: Directus Dynpages
+slug: directus-dynpages
+type: plugin
+version: 1.0.0
+description: Creating pages dynamically based on flex object collections
+icon: plug
+author:
+  name: Sebastian Laube
+  email: sebastianlaube@mindbox.de
+homepage: https://github.com/mindbox/grav-plugin-directus-dynpages
+keywords: grav, plugin, directus, flex-objects
+bugs: https://github.com/mindbox/grav-plugin-directus-dynpages/issues
+docs: https://github.com/mindbox/grav-plugin-directus-dynpages/blob/develop/README.md
+license: MIT
+gpm: false
+
+dependencies:
+  - { name: grav, version: '>=1.6.0' }
+  - { name: directus2, version: '>=2.0.0' }

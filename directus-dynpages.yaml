@@ -1,0 +1,9 @@
+enabled: true
+slugField: slug
+routes: []
+feed:
+  limit: 10
+  title: ''
+  description: ''
+news_per_page: 12
+pagination_delta: 4

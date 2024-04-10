@@ -1,0 +1,68 @@
+{% spaceless %}
+{# Format specification: https://www.rssboard.org/rss-specification #}
+{% set config = config.plugins['directus-dynpages']['feed'] %}
+
+{% set flex = grav.get('flex') %}
+{% set directory = flex.directory( header.flex.collection ) %}
+{% set collection = directory.getCollection().sort( { zbr_date: 'DESC' } ) %}
+{% set collection = collection.limit( 0, config.limit ) %}
+
+{% set lastBuildDate = 0 %}
+{% for item in collection %}
+    {%- set lastBuildDate = max(lastBuildDate, item.zbr_date) %}
+{% endfor %}
+{% endspaceless %}
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>{{ config.title }}</title>
+        <link>{{ page.url(true) }}</link>
+        <atom:link href="{{ uri.rootUrl(true)~uri.uri() }}" rel="self" type="application/rss+xml"/>
+        <description>{{ config.description }}</description>
+        <language>{{ html_lang }}</language>
+        <lastBuildDate>{{ lastBuildDate|date('D, d M Y H:i:s O') }}</lastBuildDate>
+        {% for post in collection -%}
+        {% set banner = post.zbr_hero_image.id -%}
+        {% set url = page.url(true) ~ '/' ~ post.zbr_slug -%}
+        <item>
+            <title>{{ post.zbr_title|e }}</title>
+            <link>{{ url }}</link>
+            <guid>{{ url }}</guid>
+            <pubDate>{{ post.zbr_date|date('D, d M Y H:i:s O') }}</pubDate>
+            <description>
+                <![CDATA[
+                {% if banner %}
+                    {% set fileObj = post.zbr_hero_image %}
+                    <img src="{{page.url(true)}}/{{ directusFile( fileObj, { width: 960, quality: 70 } ) }}" width="960" height="{{ (960 / fileObj.width * fileObj.height)|round(0, 'ceil') }}" loading="lazy" alt="{{ fileObj.title }}" />
+                {% endif %}
+                {{ post.zbr_content|markdown|raw }}
+                {% for module in post.zbr_blog_content_ids|sort_by_key('sort') %}
+                    {% set type = regex_replace( post.zbr_media[0].directus_files_id.type, '@/.*@', '' ) %}
+                    {# image #}
+                    {% if type == 'image' %}
+                        {% set fileObj = post.zbr_media[0].directus_files_id %}
+                        <img src="{{page.url(true)}}/{{ directusFile( fileObj, { width: 1920, quality: 70 } ) }}" width="1920" height="{{ (1920 / fileObj.width * fileObj.height)|round(0, 'ceil') }}" loading="lazy" alt="{{ fileObj.title }}" />
+                    {% endif %}
+                    {% if module.zbr_hide_title != true or module.zbr_tagline != null or module.zbr_text != null %}
+                        {% if module.zbr_hide_title != true %}
+                        <h2>
+                            {{ module.zbr_title }}
+                        </h2>
+                        {% endif %}
+                        {% if module.zbr_tagline %}
+                            <p>
+                                <b>{{ module.zbr_tagline|raw }}</b>
+                            </p>
+                        {% endif %}
+                        {% if module.zbr_text %}
+                            {{ module.zbr_text|markdown|raw }}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                ]]>
+            </description>
+            <category>{{ post.zbr_category }}</category>
+        </item>
+        {% endfor %}
+    </channel>
+</rss>
