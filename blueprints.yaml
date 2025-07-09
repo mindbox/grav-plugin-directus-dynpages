@@ -1,7 +1,7 @@
 name: Directus Dynpages
 slug: directus-dynpages
 type: plugin
-version: 1.0.0
+version: 1.0.1
 description: Creating pages dynamically based on flex object collections
 icon: plug
 author:

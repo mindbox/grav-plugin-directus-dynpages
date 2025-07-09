@@ -52,7 +52,8 @@ class DirectusDynpagesPlugin extends Plugin
     public function onPluginsInitialized(): void
     {
         // Don't proceed if we are in the admin plugin
-        if ($this->isAdmin()) {
+        if ($this->isAdmin())
+        {
             return;
         }
 
@@ -89,7 +90,8 @@ class DirectusDynpagesPlugin extends Plugin
         $config = $this->config->get('plugins.directus-dynpages');
 
         $normalized = trim($route, '/');
-        if (!$normalized) {
+        if (!$normalized)
+        {
             return;
         }
 
@@ -101,7 +103,6 @@ class DirectusDynpagesPlugin extends Plugin
         {
             $pages = $this->grav['pages'];
             $page = $pages->find( $path );
-            // dd(  $route, $entity, $page->children()->first() );
             $this->addPage( $page, $entity );
         }
     }
@@ -115,7 +116,8 @@ class DirectusDynpagesPlugin extends Plugin
         {
             $config = $this->config->get('plugins.directus-dynpages');
             $template = $page->children()->first();
-            if ( !$template )
+
+            if ( !$template || $template->folder() == $key )
             {
                 return;
             }
@@ -127,10 +129,20 @@ class DirectusDynpagesPlugin extends Plugin
             // get the data from flex storage
             $collection_key = $template->header()->flex['collection'];
             $collection = $flex->getCollection( $collection_key );
-            $object = $collection->filterBy( [$config['slugField'] => $key ] )->first();
+            $object = $collection->filterBy( [ $config['slugField'] => $key ] )->first();
 
-            // no entry - no page
-            if ( ! $object ) {
+            // no entry - try full path to be sure
+            if ( ! $object
+                && property_exists( $page->header(), 'allow_full_path' )
+                && $page->header()->allow_full_path
+            )
+            {
+                $object = $collection->filterBy( [ $config['slugField'] => $route ] )->first();
+            }
+
+            // still no entry - no page
+            if ( ! $object )
+            {
                 return;
             }
 
